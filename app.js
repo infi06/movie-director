@@ -49,7 +49,7 @@ app.post("/movies/", async (request, response) => {
   response.send("Movie Successfully Added");
 });
 
-//get playerId API
+//get movieId API
 app.get("/movies/:movieId/", async (request, response) => {
   const { movieId } = request.params;
   const getMovieValueQuery = `
@@ -57,6 +57,37 @@ app.get("/movies/:movieId/", async (request, response) => {
     FROM 
     movie
     WHERE movie_id=${movieId};`;
-  const movies = await db.get(getMovieValueQuery);
-  response.send(movies);
+  const movie = await db.get(getMovieValueQuery);
+  response.send(movie);
+});
+
+//update player API
+
+app.put("/movies/:movieId/", async (request, response) => {
+  const { movieId } = request.params;
+  const movieLatest = request.body;
+  const { directorId, movieName, leadActor } = movieLatest;
+  const updateMovieQuery = `
+    UPDATE movie
+    SET 
+      director_id = ${directorId},
+      movie_name = '${movieName}',
+      lead_actor = '${leadActor}'
+    
+    WHERE 
+      movie_id = ${movieId};`;
+  const movieInform = await db.run(updateMovieQuery);
+  response.send("Movie Details Updated");
+});
+
+//delete player API
+app.delete("/movies/:movieId/", async (request, response) => {
+  const { movieId } = request.params;
+
+  const deleteMovieQuery = `
+    DELETE FROM movie
+    WHERE 
+      movie_id = ${movieId};`;
+  const movieTime = await db.run(deleteMovieQuery);
+  response.send("Movie Removed");
 });
